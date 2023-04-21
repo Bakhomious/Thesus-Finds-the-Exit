@@ -1,3 +1,13 @@
-# TODO: a title for your project
+# Thesus Find the Exit
 
-TODO: a detailed description of your project (must contain at least the original description of the assignment)
+Consider the labyrinth below:
+
+![](images/labyrinth.png)
+
+The goal of the game is to navigate the blue ball to the square marked with the empty circle.
+
+## Rules
+
+- In a move, the ball must be rolled to up, right, down, or left.
+- The ball moves until it reaches the wall around the labyrinth or any inner wall.
+
