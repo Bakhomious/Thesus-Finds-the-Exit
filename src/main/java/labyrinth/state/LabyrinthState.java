@@ -1,8 +1,12 @@
 package labyrinth.state;
 
-import javafx.beans.property.ReadOnlyObjectWrapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.util.Arrays;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.StringJoiner;
 
 public class LabyrinthState {
 
@@ -11,42 +15,62 @@ public class LabyrinthState {
      */
     public static final int BOARD_SIZE = 7;
 
-    private static final char LEFT_WALL = 'L';
-    private static final char TOP_WALL = 'T';
-    private static final char RIGHT_WALL = 'R';
-    private static final char BALL = '*';
-    private static final char EMPTY = '-';
-
-    private char initial_board[][] = new char[BOARD_SIZE][BOARD_SIZE];
+    private Set<Wall> walls = new HashSet<>();
+    private Position blueBallPosition;
+    private Position goalPosition;
 
     public LabyrinthState() {
-        initial_board = new char[][]{
-            {'-', 'L', '-', '-', 'L', '-', '-'},
-            {'-', '-', 'T', '-', '*', '-', 'T'},
-            {'-', '-', '-', 'L', '-', '-', 'L'},
-            {'-', 'T', '-', '-', 'L', 'L', '-'},
-            {'-', '-', '-', 'T', '-', '-', 'T'},
-            {'T', 'R', '-', 'L', 'T', '-', '-'},
-            {'-', '-', 'T', '-', 'L', '-', 'L'}
-        };
+        this(loadWalls("/labyrinth.json"));
+        // TODO: create a JSON file for the initial state
+        blueBallPosition = new Position(1, 4);
+        goalPosition = new Position(5, 2);
     }
+
+    public LabyrinthState(Set<Wall> walls) {
+        this.walls = walls;
+    }
+
+    // TODO: Refactor Function
+    private static Set<Wall> loadWalls(String path) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            InputStream inputStream = LabyrinthState.class.getResourceAsStream(path);
+            Wall[] walls = mapper.readValue(inputStream, Wall[].class);
+            Set<Wall> wallSet = new HashSet<>();
+
+            for (Wall wall: walls) {
+                wallSet.add(wall);
+                switch (wall.getDirection()) {
+                    case RIGHT ->
+                        wallSet.add(new Wall(wall.getPosition()
+                                .getPosition(MoveDirection.RIGHT),
+                                Wall.Direction.LEFT));
+                    case BOTTOM ->
+                        wallSet.add(new Wall(wall.getPosition()
+                                .getPosition(MoveDirection.DOWN),
+                                Wall.Direction.TOP));
+                }
+            }
+
+            return wallSet;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    // TODO: Move Functions, isGoal, isWall, validMove
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        for (char[] row : initial_board) {
-            for (char c : row) {
-                sb.append(c).append(' ');
-            }
-            sb.append("\n");
-        }
-        return sb.toString();
+        var sj= new StringJoiner(", ", "[", "]");
+        walls.forEach(wall -> sj.add(wall.toString()));
+        return sj.toString();
     }
-
-    // TODO: Implement Move functionality and checking for walls
 
     public static void main(String[] args) {
         LabyrinthState labyrinthState = new LabyrinthState();
         System.out.println(labyrinthState);
     }
+
 }
