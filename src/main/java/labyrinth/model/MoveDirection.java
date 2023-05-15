@@ -1,4 +1,4 @@
-package labyrinth.state;
+package labyrinth.model;
 
 /**
  * Represents the four main directions.

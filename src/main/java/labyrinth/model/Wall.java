@@ -1,4 +1,4 @@
-package labyrinth.state;
+package labyrinth.model;
 
 import javafx.geometry.Pos;
 import lombok.AllArgsConstructor;
@@ -12,10 +12,11 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode
 public class Wall {
     private Position position;
+    @Getter
     private Direction direction;
 
-    enum Direction {
-        RIGHT, BOTTOM, LEFT, TOP
+    public enum Direction {
+        RIGHT, BOTTOM, LEFT, TOP;
     }
 
     @Override

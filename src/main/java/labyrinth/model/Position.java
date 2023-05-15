@@ -1,4 +1,4 @@
-package labyrinth.state;
+package labyrinth.model;
 
 /**
  * Represents a 2D position.

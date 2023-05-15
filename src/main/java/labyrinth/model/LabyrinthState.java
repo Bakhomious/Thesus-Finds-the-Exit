@@ -1,28 +1,40 @@
-package labyrinth.state;
+package labyrinth.model;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.AllArgsConstructor;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanWrapper;
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.geometry.Pos;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.StringJoiner;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class LabyrinthState {
+    private String path;
+    private final int boardSize;
+    private final Set<Wall> walls;
+    @NonNull @Getter
+    private ReadOnlyObjectWrapper<Position> blueBall;
+    @Getter
+    private final Position goalPosition;
 
-    /**
-     * The size of the board.
-     */
-    private int boardSize;
-    private Set<Wall> walls = new HashSet<>();
-    private Position blueBall;
-    private Position goalPosition;
+    private ReadOnlyBooleanWrapper goal = new ReadOnlyBooleanWrapper();
 
     public LabyrinthState() {
-        LabyrinthState state = loadLabyrinthState("/labyrinth.json");
+        this("/labyrinth.json");
+    }
+    public LabyrinthState(String path) {
+        this.path = path;
+        LabyrinthState state = loadLabyrinthState();
         if (state == null) {
             throw new IllegalStateException();
         }
@@ -33,13 +45,14 @@ public class LabyrinthState {
         this.goalPosition = state.goalPosition;
 
         checkConfig();
-
+        goal.bind(this.blueBall.isEqualTo(this.goalPosition));
     }
 
-    private LabyrinthState loadLabyrinthState(String path) {
+
+    private LabyrinthState loadLabyrinthState() {
         try {
             ObjectMapper mapper = new ObjectMapper();
-            InputStream inputStream = LabyrinthState.class.getResourceAsStream(path);
+            InputStream inputStream = LabyrinthState.class.getResourceAsStream(this.path);
             JsonNode jsonNode = mapper.readTree(inputStream);
 
             int boardSize = mapper.treeToValue(jsonNode.get("boardSize"), Integer.class);
@@ -48,7 +61,7 @@ public class LabyrinthState {
             Wall[] walls = mapper.treeToValue(jsonNode.get("walls"), Wall[].class);
             Set<Wall> wallSet = processWalls(walls);
 
-            return new LabyrinthState(boardSize, wallSet, blueBallPosition, goalPosition);
+            return new LabyrinthState(boardSize, wallSet, new ReadOnlyObjectWrapper<>(blueBallPosition), goalPosition);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -80,16 +93,18 @@ public class LabyrinthState {
                 throw new IllegalStateException();
             }
         }
-        if (!isOnBoard(blueBall)
+        if (!isOnBoard(blueBall.get())
                 || !isOnBoard(goalPosition)) {
             throw new IllegalStateException();
         }
     }
 
-    // TODO: Move Functions, isGoal, isWall, validMove
-
     public boolean isGoal() {
-        return blueBall.equals(goalPosition);
+        return goal.get();
+    }
+
+    public ReadOnlyBooleanProperty goalProperty() {
+        return goal.getReadOnlyProperty();
     }
 
     public void move(MoveDirection moveDirection) {
@@ -122,8 +137,8 @@ public class LabyrinthState {
     }
 
     private Position hitWall(MoveDirection moveDirection) {
-        int toRow = blueBall.row();
-        int toCol = blueBall.col();
+        int toRow = blueBall.get().row();
+        int toCol = blueBall.get().col();
 
         while(canMove(moveDirection, new Position(toRow, toCol))) {
             switch (moveDirection) {
@@ -185,8 +200,20 @@ public class LabyrinthState {
         return false;
     }
 
+
     private boolean isWall(Wall testWall) {
         return walls.contains(testWall);
+    }
+
+    public Set<Wall.Direction> getWallDirectionsAtPosition(Position position) {
+        Set<Wall.Direction> wallDirections = new HashSet<>();
+        for(var wallDirection : Wall.Direction.values())
+        {
+            if(isWall(new Wall(position, wallDirection))) {
+                wallDirections.add(wallDirection);
+            }
+        }
+        return wallDirections;
     }
 
     private boolean isOnBoard(Position position) {
@@ -196,8 +223,9 @@ public class LabyrinthState {
 
 
     private void moveBall(Position toPosition) {
-        blueBall = toPosition;
+        blueBall.set(toPosition);
     }
+
 
     @Override
     public String toString() {
@@ -211,14 +239,15 @@ public class LabyrinthState {
     public static void main(String[] args) {
         LabyrinthState labyrinthState = new LabyrinthState();
         System.out.println(labyrinthState);
-        labyrinthState.move(MoveDirection.DOWN);
-        System.out.println(labyrinthState);
         labyrinthState.move(MoveDirection.RIGHT);
+        System.out.println(labyrinthState);
+        labyrinthState.move(MoveDirection.DOWN);
         System.out.println(labyrinthState);
         labyrinthState.move(MoveDirection.LEFT);
         System.out.println(labyrinthState);
         labyrinthState.move(MoveDirection.UP);
         System.out.println(labyrinthState);
+        System.out.println(labyrinthState.getWallDirectionsAtPosition(new Position(3, 3)));
     }
 
 }
