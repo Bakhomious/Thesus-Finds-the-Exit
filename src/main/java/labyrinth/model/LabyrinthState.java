@@ -4,29 +4,22 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.geometry.Pos;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.StringJoiner;
 
-@RequiredArgsConstructor
 public class LabyrinthState {
     private String path;
     private final int boardSize;
     private final Set<Wall> walls;
-    @NonNull @Getter
-    private ReadOnlyObjectWrapper<Position> blueBall;
-    @Getter
-    private final Position goalPosition;
-
+    public final int BLUE_BALL = 0;
+    public final int GOAL_POSITION = 1;
+    private ReadOnlyObjectWrapper<Position>[] positions = new ReadOnlyObjectWrapper[2];
     private ReadOnlyBooleanWrapper goal = new ReadOnlyBooleanWrapper();
 
     public LabyrinthState() {
@@ -41,11 +34,16 @@ public class LabyrinthState {
 
         this.boardSize = state.boardSize;
         this.walls = state.walls;
-        this.blueBall = state.blueBall;
-        this.goalPosition = state.goalPosition;
+        this.positions = state.positions;
 
         checkConfig();
-        goal.bind(this.blueBall.isEqualTo(this.goalPosition));
+        goal.bind(positions[BLUE_BALL].isEqualTo(positions[GOAL_POSITION]));
+    }
+
+    public LabyrinthState(int boardSize, Set<Wall> walls, ReadOnlyObjectWrapper<Position>[] positions) {
+        this.boardSize = boardSize;
+        this.walls = walls;
+        this.positions = positions;
     }
 
 
@@ -60,8 +58,10 @@ public class LabyrinthState {
             Position goalPosition = mapper.treeToValue(jsonNode.get("goalPosition"), Position.class);
             Wall[] walls = mapper.treeToValue(jsonNode.get("walls"), Wall[].class);
             Set<Wall> wallSet = processWalls(walls);
+            positions[BLUE_BALL] = new ReadOnlyObjectWrapper<>(blueBallPosition);
+            positions[GOAL_POSITION] = new ReadOnlyObjectWrapper<>(goalPosition);
 
-            return new LabyrinthState(boardSize, wallSet, new ReadOnlyObjectWrapper<>(blueBallPosition), goalPosition);
+            return new LabyrinthState(boardSize, wallSet, positions);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -93,8 +93,8 @@ public class LabyrinthState {
                 throw new IllegalStateException();
             }
         }
-        if (!isOnBoard(blueBall.get())
-                || !isOnBoard(goalPosition)) {
+        if (!isOnBoard(getPosition(BLUE_BALL))
+                || !isOnBoard(getPosition(GOAL_POSITION))) {
             throw new IllegalStateException();
         }
     }
@@ -137,8 +137,8 @@ public class LabyrinthState {
     }
 
     private Position hitWall(MoveDirection moveDirection) {
-        int toRow = blueBall.get().row();
-        int toCol = blueBall.get().col();
+        int toRow = getPosition(BLUE_BALL).row();
+        int toCol = getPosition(BLUE_BALL).col();
 
         while(canMove(moveDirection, new Position(toRow, toCol))) {
             switch (moveDirection) {
@@ -223,7 +223,7 @@ public class LabyrinthState {
 
 
     private void moveBall(Position toPosition) {
-        blueBall.set(toPosition);
+        positions[BLUE_BALL].set(toPosition);
     }
 
 
@@ -232,8 +232,16 @@ public class LabyrinthState {
         var sj= new StringJoiner(", ", "[", "]");
         walls.forEach(wall -> sj.add(wall.toString()));
         sj.add(String.format("\nBlue Ball: %s, Goal: %s",
-                blueBall.toString(), goalPosition.toString()));
+                getPosition(BLUE_BALL).toString(), getPosition(GOAL_POSITION).toString()));
         return sj.toString();
+    }
+
+    public Position getPosition(int n) {
+        return positions[n].get();
+    }
+
+    public ReadOnlyObjectProperty<Position> positionProperty(int n) {
+        return positions[n].getReadOnlyProperty();
     }
 
     public static void main(String[] args) {

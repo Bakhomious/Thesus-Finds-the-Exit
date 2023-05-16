@@ -3,69 +3,73 @@
     -fx-border-color: black;
 }
 
+.square {
+    -fx-border-style: solid;
+    -fx-border-color: gray;
+}
 
 .square.rightWall {
-    -fx-border-width: 0em 0.3em 0em 0em;
+    -fx-border-width: 0.1em 0.3em 0.1em 0.1em;
     -fx-border-color: gray black gray gray;
 }
 
 .square.bottomWall {
-    -fx-border-width: 0em 0em 0.3em 0em;
+    -fx-border-width: 0.1em 0.1em 0.3em 0.1em;
     -fx-border-color: gray gray black gray;
 }
 
 .square.leftWall {
-    -fx-border-width: 0em 0em 0em 0.3em;
+    -fx-border-width: 0.1em 0.1em 0.1em 0.3em;
     -fx-border-color: gray gray gray black;
 }
 
 .square.topWall {
-    -fx-border-width: 0.3em 0em 0em 0em;
+    -fx-border-width: 0.3em 0.1em 0.1em 0.1em;
     -fx-border-color: black gray gray gray;
 }
 
 .square.topWall.bottomWall {
-    -fx-border-width: 0.3em 0em 0.3em 0em;
+    -fx-border-width: 0.3em 0.1em 0.3em 0.1em;
     -fx-border-color: black gray black gray;
 }
 
 .square.topWall.rightWall {
-    -fx-border-width: 0.3em 0.3em 0em 0em;
+    -fx-border-width: 0.3em 0.3em 0.1em 0.1em;
     -fx-border-color: black black gray gray;
 }
 
 .square.topWall.leftWall {
-    -fx-border-width: 0.3em 0em 0em 0.3em;
+    -fx-border-width: 0.3em 0.1em 0.1em 0.3em;
     -fx-border-color: black gray gray black;
 }
 
 .square.bottomWall.rightWall {
-    -fx-border-width: 0em 0.3em 0.3em 0em;
+    -fx-border-width: 0.1em 0.3em 0.3em 0.1em;
     -fx-border-color: gray black black gray;
 }
 
 .square.bottomWall.leftWall {
-    -fx-border-width: 0em 0em 0.3em 0.3em;
+    -fx-border-width: 0.1em 0.1em 0.3em 0.3em;
     -fx-border-color: gray gray black black;
 }
 
 .square.rightWall.leftWall {
-    -fx-border-width: 0em 0.3em 0em 0.3em;
+    -fx-border-width: 0.1em 0.3em 0em 0.3em;
     -fx-border-color: gray black gray black;
 }
 
 .square.rightWall.bottomWall {
-    -fx-border-width: 0em 0.3em 0.3em 0em;
+    -fx-border-width: 0.1em 0.3em 0.3em 0.1em;
     -fx-border-color: gray black black gray;
 }
 
 .square.rightWall.topWall {
-    -fx-border-width: 0.3em 0.3em 0em 0em;
+    -fx-border-width: 0.3em 0.3em 0.1em 0.1em;
     -fx-border-color: black black gray gray;
 }
 
 .square.rightWall.leftWall.bottomWall {
-    -fx-border-width: 0em 0.3em 0.3em 0.3em;
+    -fx-border-width: 0.1em 0.3em 0.3em 0.3em;
     -fx-border-color: gray black black black;
 }
 

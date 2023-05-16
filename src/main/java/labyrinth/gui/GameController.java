@@ -1,7 +1,6 @@
 package labyrinth.gui;
 
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
@@ -9,7 +8,6 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.layout.GridPane;
@@ -41,7 +39,6 @@ public class GameController {
     private void initialize() {
         createControlBindings();
         restartGame();
-        populateGrid();
         registerKeyEventHandler();
     }
 
@@ -50,10 +47,11 @@ public class GameController {
     }
 
     private void restartGame() {
+        clearGrid();
         state = new LabyrinthState();
-        numberOfMoves.set(0);
         populateGrid();
         state.goalProperty().addListener(this::handleGameOver);
+        numberOfMoves.set(0);
     }
 
     private void registerKeyEventHandler() {
@@ -96,7 +94,7 @@ public class GameController {
     }
 
     private void performMove(MoveDirection moveDirection) {
-        if (state.canMove(moveDirection, state.getBlueBall().get())) {
+        if (state.canMove(moveDirection, state.getPosition(state.BLUE_BALL))) {
             Logger.info("Moving {}", moveDirection);
             state.move(moveDirection);
             Logger.trace("New state: {}", state);
@@ -112,6 +110,7 @@ public class GameController {
             alert.setHeaderText("Game Over");
             alert.setContentText("Congratulations, you have solved the puzzle!");
             alert.showAndWait();
+            restartGame();
         }
     }
 
@@ -134,41 +133,39 @@ public class GameController {
                 square.getStyleClass().add(wallClass);
             }
         }
-
-        var ballView = new ImageView(imageStorage.get(0));
-        ballView.setFitWidth(75);
-        ballView.setFitHeight(75);
-        ballView.visibleProperty().bind(createBindingForPieceAtPosition(row, col));
-        square.getChildren().add(ballView);
-
-        if(state.getGoalPosition().equals(new Position(row, col))) {
-            var goalView = new ImageView(imageStorage.get(1));
-            goalView.setFitWidth(75);
-            goalView.setFitHeight(75);
-            square.getChildren().add(goalView);
+        for(var i = 0; i < 2; i++) {
+            var pieceView = new ImageView(imageStorage.get(i));
+            pieceView.setFitWidth(75);
+            pieceView.setFitHeight(75);
+            pieceView.visibleProperty().bind(createBindingForPieceAtPosition(i, row, col));
+            square.getChildren().add(pieceView);
         }
         square.setOnMouseClicked(this::handleMouseClick);
         return square;
     }
 
-    private BooleanBinding createBindingForPieceAtPosition(int row, int col) {
+    private BooleanBinding createBindingForPieceAtPosition(int n, int row, int col) {
         return new BooleanBinding() {
             {
-                super.bind(state.getBlueBall());
+                super.bind(state.positionProperty(n));
             }
             @Override
             protected boolean computeValue() {
-                var pos = state.getBlueBall().get();
+                var pos = state.positionProperty(n).get();
                 return pos.row() == row && pos.col() == col;
             }
         };
     }
 
+    private void clearGrid() {
+        grid.getChildren().clear();
+    }
+
     private Optional<MoveDirection> getDirectionFromClick(int row, int col) {
-        var ballPos = state.getBlueBall();
+        var ballPos = state.getPosition(state.BLUE_BALL);
         MoveDirection direction = null;
         try {
-            direction = MoveDirection.of(row - ballPos.get().row(), col - ballPos.get().col());
+            direction = MoveDirection.of(row - ballPos.row(), col - ballPos.col());
         } catch (IllegalArgumentException e) {
         }
         return Optional.ofNullable(direction);
