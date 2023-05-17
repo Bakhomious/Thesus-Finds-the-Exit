@@ -105,13 +105,15 @@ public class GameController {
     }
 
     private void handleGameOver(ObservableValue<? extends Boolean> observableValue, Boolean oldValue, Boolean newValue) {
-        if(newValue) {
-            var alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setHeaderText("Game Over");
-            alert.setContentText("Congratulations, you have solved the puzzle!");
-            alert.showAndWait();
-            restartGame();
-        }
+        Platform.runLater(() -> {
+            if (newValue) {
+                var alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setHeaderText("Game Over");
+                alert.setContentText("Congratulations, you have solved the puzzle!");
+                alert.showAndWait();
+                restartGame();
+            }
+        });
     }
 
     private void populateGrid() {
