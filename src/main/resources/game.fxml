@@ -39,7 +39,7 @@
       </GridPane>
    </center>
    <padding>
-      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
    </padding>
    <right>
       <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
@@ -91,12 +91,12 @@
    <bottom>
       <HBox alignment="CENTER" focusTraversable="true" prefHeight="100.0" prefWidth="200.0" spacing="10.0" BorderPane.alignment="CENTER">
          <children>
-            <Button fx:id="resetButton" mnemonicParsing="false" text="Reset">
+            <Button fx:id="resetButton" focusTraversable="false" mnemonicParsing="false" onAction="#handleResetButton" text="Reset">
                <font>
                   <Font size="20.0" />
                </font>
             </Button>
-            <Button fx:id="giveupFinishButton" mnemonicParsing="false" text="Give Up">
+            <Button fx:id="giveupFinishButton" focusTraversable="false" mnemonicParsing="false" text="Give Up">
                <font>
                   <Font size="20.0" />
                </font>
@@ -104,4 +104,17 @@
          </children>
       </HBox>
    </bottom>
+   <top>
+      <Label fx:id="playerGreeting" text="Good Luck, Player!" textAlignment="CENTER" BorderPane.alignment="CENTER">
+         <font>
+            <Font size="31.0" />
+         </font>
+         <BorderPane.margin>
+            <Insets />
+         </BorderPane.margin>
+         <padding>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </padding>
+      </Label>
+   </top>
 </BorderPane>

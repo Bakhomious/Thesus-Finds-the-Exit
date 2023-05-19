@@ -1,12 +1,16 @@
 package labyrinth.gui;
 
+import javafx.animation.Animation;
 import javafx.application.Platform;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
@@ -17,8 +21,10 @@ import labyrinth.model.MoveDirection;
 import labyrinth.model.Position;
 import labyrinth.util.ImageStorage;
 import labyrinth.util.OrdinalImageStorage;
+import labyrinth.util.Stopwatch;
 import org.tinylog.Logger;
 
+import java.time.Instant;
 import java.util.Optional;
 
 public class GameController {
@@ -27,6 +33,17 @@ public class GameController {
     private GridPane grid;
     @FXML
     private TextField numberOfMovesField;
+    @FXML
+    private Button giveupFinishButton;
+    @FXML
+    private Button resetButton;
+
+    @FXML
+    private Label stopwatchLabel;
+
+    private Stopwatch stopwatch = new Stopwatch();
+
+    private Instant startTime;
 
     private ImageStorage<Integer> imageStorage = new OrdinalImageStorage("/labyrinth/model",
             "ball.png",
@@ -38,6 +55,7 @@ public class GameController {
     @FXML
     private void initialize() {
         createControlBindings();
+        stopwatchLabel.textProperty().bind(stopwatch.hhmmssProperty());
         restartGame();
         registerKeyEventHandler();
     }
@@ -52,6 +70,12 @@ public class GameController {
         populateGrid();
         state.goalProperty().addListener(this::handleGameOver);
         numberOfMoves.set(0);
+
+        startTime = Instant.now();
+        if (stopwatch.getStatus() == Animation.Status.PAUSED) {
+            stopwatch.reset();
+        }
+        stopwatch.start();
     }
 
     private void registerKeyEventHandler() {
@@ -107,6 +131,7 @@ public class GameController {
     private void handleGameOver(ObservableValue<? extends Boolean> observableValue, Boolean oldValue, Boolean newValue) {
         Platform.runLater(() -> {
             if (newValue) {
+                stopwatch.stop();
                 var alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setHeaderText("Game Over");
                 alert.setContentText("Congratulations, you have solved the puzzle!");
@@ -114,6 +139,13 @@ public class GameController {
                 restartGame();
             }
         });
+    }
+
+    public void handleResetButton(ActionEvent actionEvent) {
+        Logger.debug("{} is pressed", ((Button) actionEvent.getSource()).getText());
+        Logger.info("Resetting game");
+        stopwatch.stop();
+        restartGame();
     }
 
     private void populateGrid() {
