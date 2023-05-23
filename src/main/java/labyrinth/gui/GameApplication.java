@@ -5,15 +5,18 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.tinylog.Logger;
+
+import javax.inject.Inject;
 
 public class GameApplication extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("/game.fxml"));
-        stage.setTitle("Thesus Finds the Exit");
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
+        Logger.info("Starting application");
+        Parent root = FXMLLoader.load(getClass().getResource("/fxml/opening.fxml"));
+        stage.setTitle("Thesus Find the Exit");
+        stage.setScene(new Scene(root));
         stage.setResizable(false);
         stage.show();
     }

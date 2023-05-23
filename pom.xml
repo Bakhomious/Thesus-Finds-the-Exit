@@ -26,8 +26,9 @@
         <maven.checkstyle.version>3.2.1</maven.checkstyle.version>
         <maven.surefire.version>3.0.0</maven.surefire.version>
         <jacoco.version>0.8.9</jacoco.version>
-        <tinylog.version>2.6.1</tinylog.version>
-        <exec.mainClass><!-- TODO: the main class of your application that contains the main method --></exec.mainClass>
+        <tinylog.version>2.6.2</tinylog.version>
+        <jackson.version>2.15.1</jackson.version>
+        <exec.mainClass>labyrinth.gui.Main</exec.mainClass>
     </properties>
     <dependencies>
         <dependency>
@@ -63,7 +64,12 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.14.2</version>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>${jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>org.tinylog</groupId>

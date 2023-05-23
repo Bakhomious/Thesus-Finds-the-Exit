@@ -7,6 +7,7 @@ import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -16,15 +17,29 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
 import labyrinth.model.LabyrinthState;
 import labyrinth.model.MoveDirection;
 import labyrinth.model.Position;
+import labyrinth.results.GameResult;
+import labyrinth.results.GameResultRepository;
+import labyrinth.util.ControllerHelper;
 import labyrinth.util.ImageStorage;
 import labyrinth.util.OrdinalImageStorage;
 import labyrinth.util.Stopwatch;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
+import lombok.extern.java.Log;
 import org.tinylog.Logger;
 
+import javax.inject.Inject;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.time.Duration;
 import java.time.Instant;
+import java.util.Objects;
 import java.util.Optional;
 
 public class GameController {
@@ -41,33 +56,42 @@ public class GameController {
     @FXML
     private Label stopwatchLabel;
 
+    @FXML
+    private Label playerGreeting;
+
+    @Setter
+    private String playerName;
+
+    private GameResultRepository gameResultRepository = new GameResultRepository();
+
     private Stopwatch stopwatch = new Stopwatch();
 
     private Instant startTime;
 
-    private ImageStorage<Integer> imageStorage = new OrdinalImageStorage("/labyrinth/model",
+    private ImageStorage<Integer> imageStorage = new OrdinalImageStorage("/images",
             "ball.png",
             "goal.png");
     private LabyrinthState state;
 
     private IntegerProperty numberOfMoves = new SimpleIntegerProperty(0);
+    private FXMLLoader fxmlLoader = new FXMLLoader();
+    private boolean isSolved;
 
     @FXML
     private void initialize() {
+        isSolved = false;
         createControlBindings();
-        stopwatchLabel.textProperty().bind(stopwatch.hhmmssProperty());
-        restartGame();
         registerKeyEventHandler();
+        restartGame();
     }
 
     private void createControlBindings() {
         numberOfMovesField.textProperty().bind(numberOfMoves.asString());
+        stopwatchLabel.textProperty().bind(stopwatch.hhmmssProperty());
     }
 
     private void restartGame() {
-        clearGrid();
         state = new LabyrinthState();
-        populateGrid();
         state.goalProperty().addListener(this::handleGameOver);
         numberOfMoves.set(0);
 
@@ -76,10 +100,8 @@ public class GameController {
             stopwatch.reset();
         }
         stopwatch.start();
-    }
-
-    private void registerKeyEventHandler() {
-        Platform.runLater(() -> grid.getScene().setOnKeyPressed(this::handleKeyPress));
+        clearGrid();
+        populateGrid();
     }
 
     @FXML
@@ -93,28 +115,35 @@ public class GameController {
                 () -> Logger.warn("Click does not correspond to any direction"));
     }
     @FXML
-    private void handleKeyPress(KeyEvent keyEvent) {
-        var restartKeyCombination = new KeyCodeCombination(KeyCode.R, KeyCombination.CONTROL_DOWN);
-        var quitKeyCombination = new KeyCodeCombination(KeyCode.Q, KeyCombination.CONTROL_DOWN);
-        if (restartKeyCombination.match(keyEvent)) {
-            Logger.debug("Restarting game");
-            restartGame();
-        } else if (quitKeyCombination.match(keyEvent)) {
-            Logger.debug("Quitting game");
-            Platform.exit();
-        } else if (keyEvent.getCode() == KeyCode.UP) {
-            Logger.debug("UP pressed");
-            performMove(MoveDirection.UP);
-        } else if (keyEvent.getCode() == KeyCode.RIGHT) {
-            Logger.debug("RIGHT pressed");
-            performMove(MoveDirection.RIGHT);
-        } else if (keyEvent.getCode() == KeyCode.DOWN) {
-            Logger.debug("DOWN pressed");
-            performMove(MoveDirection.DOWN);
-        } else if (keyEvent.getCode() == KeyCode.LEFT) {
-            Logger.debug("LEFT pressed");
-            performMove(MoveDirection.LEFT);
-        }
+    private void registerKeyEventHandler() {
+        final KeyCombination restartKeyCombination = new KeyCodeCombination(KeyCode.R, KeyCombination.CONTROL_DOWN);
+        final KeyCombination quitKeyCombination = new KeyCodeCombination(KeyCode.Q, KeyCombination.CONTROL_DOWN);
+        Platform.runLater(() -> grid.getScene().setOnKeyPressed(
+                keyEvent -> {
+                    if (isSolved) {
+                        return;
+                    }
+                    if (restartKeyCombination.match(keyEvent)) {
+                        Logger.debug("Restarting game...");
+                        restartGame();
+                    } else if (quitKeyCombination.match(keyEvent)) {
+                        Logger.debug("Exiting...");
+                        Platform.exit();
+                    } else if (keyEvent.getCode() == KeyCode.UP) {
+                        Logger.debug("Up arrow pressed");
+                        performMove(MoveDirection.UP);
+                    } else if (keyEvent.getCode() == KeyCode.RIGHT) {
+                        Logger.debug("Right arrow pressed");
+                        performMove(MoveDirection.RIGHT);
+                    } else if (keyEvent.getCode() == KeyCode.DOWN) {
+                        Logger.debug("Down arrow pressed");
+                        performMove(MoveDirection.DOWN);
+                    } else if (keyEvent.getCode() == KeyCode.LEFT) {
+                        Logger.debug("Left arrow pressed");
+                        performMove(MoveDirection.LEFT);
+                    }
+                }
+        ));
     }
 
     private void performMove(MoveDirection moveDirection) {
@@ -131,14 +160,55 @@ public class GameController {
     private void handleGameOver(ObservableValue<? extends Boolean> observableValue, Boolean oldValue, Boolean newValue) {
         Platform.runLater(() -> {
             if (newValue) {
+                Logger.info("{} has solved the game in {} steps", playerName,numberOfMoves.get());
+                playerGreeting.setText("Congratulations!");
                 stopwatch.stop();
-                var alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setHeaderText("Game Over");
-                alert.setContentText("Congratulations, you have solved the puzzle!");
-                alert.showAndWait();
-                restartGame();
+                resetButton.setDisable(true);
+                isSolved = true;
+                giveupFinishButton.setText("Finish");
             }
         });
+    }
+
+    public void handleGiveUpFinishButton(
+            @NonNull final ActionEvent actionEvent) throws IOException {
+
+        final var buttonText = ((Button) actionEvent.getSource()).getText();
+        Logger.debug("{} is pressed", buttonText);
+        if (Objects.equals(buttonText, "Give Up")) {
+            stopwatch.stop();
+            Logger.info("The game has been given up");
+        }
+
+        Logger.debug("Saving result");
+        storeResult();
+
+        Logger.debug("Loading HighScoreController");
+        ControllerHelper.loadAndShowFXML(
+                fxmlLoader,
+                "/fxml/high-scores.fxml",
+                (Stage) ((Node) actionEvent.getSource()).getScene().getWindow()
+        );
+    }
+
+    private void storeResult(){
+        Logger.info("Storing game results for player {}", playerName);
+        var repository = new GameResultRepository();
+
+        var file = new File("results.json");
+        try {
+            repository.loadFromFile(file);
+        } catch (FileNotFoundException e) {
+            Logger.warn("File {} was not found, creating one!", file);
+        } catch (IOException e){
+            Logger.warn("Error reading file {}!", file);
+        }
+        repository.addOne(createGameResult());
+        try {
+            repository.saveToFile(file);
+        } catch (IOException e){
+            Logger.warn("Error writing file {}!", file);
+        }
     }
 
     public void handleResetButton(ActionEvent actionEvent) {
@@ -205,5 +275,13 @@ public class GameController {
         return Optional.ofNullable(direction);
     }
 
+    private GameResult createGameResult() {
+        return GameResult.builder()
+                .player(playerName)
+                .solved(state.isGoal())
+                .duration(Duration.between(startTime, Instant.now()))
+                .steps(numberOfMoves.get())
+                .build();
+    }
 
 }

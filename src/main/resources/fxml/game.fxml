@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="200.0" prefWidth="200.0" stylesheets="@game.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="labyrinth.gui.GameController">
+<BorderPane prefHeight="200.0" prefWidth="200.0" stylesheets="@../game.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="labyrinth.gui.GameController">
    <center>
       <GridPane fx:id="grid" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="600.0" styleClass="grid" BorderPane.alignment="CENTER">
          <columnConstraints>
@@ -96,7 +96,7 @@
                   <Font size="20.0" />
                </font>
             </Button>
-            <Button fx:id="giveupFinishButton" focusTraversable="false" mnemonicParsing="false" text="Give Up">
+            <Button fx:id="giveupFinishButton" focusTraversable="false" mnemonicParsing="false" onAction="#handleGiveUpFinishButton" text="Give Up">
                <font>
                   <Font size="20.0" />
                </font>
@@ -105,7 +105,7 @@
       </HBox>
    </bottom>
    <top>
-      <Label fx:id="playerGreeting" text="Good Luck, Player!" textAlignment="CENTER" BorderPane.alignment="CENTER">
+      <Label fx:id="playerGreeting" text="Good Luck!" textAlignment="CENTER" BorderPane.alignment="CENTER">
          <font>
             <Font size="31.0" />
          </font>
