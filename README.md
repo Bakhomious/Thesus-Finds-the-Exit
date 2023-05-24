@@ -17,10 +17,4 @@ The goal of the game is to navigate the blue ball to the square marked with the 
 - The game loads the labyrinth from a `JSON` file, which makes it easily extensible to add more maps.
 - Write results to a `JSON` file using [jackson](https://github.com/FasterXML/jackson).
 
-## TO-DO (For Personal Documentation)
-
-- [ ] Refactoring
-- [ ] JavaDoc
-- [ ] Unit Tests
-
 
