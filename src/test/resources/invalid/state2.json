@@ -1,0 +1,43 @@
+{"walls": [{"position": {
+  "row": 0, "col": 0}, "direction": "RIGHT"},
+  {"position": {
+    "row": 0, "col": 2}, "direction": "BOTTOM"},
+  {"position": {
+    "row": 0, "col": 3}, "direction": "RIGHT"},
+  {"position": {
+    "row": 0, "col": 6}, "direction": "BOTTOM"},
+  {"position": {
+    "row": 2, "col": 1}, "direction": "BOTTOM"},
+  {"position": {
+    "row": 2, "col": 2}, "direction": "RIGHT"},
+  {"position": {
+    "row": 2, "col": 5}, "direction": "RIGHT"},
+  {"position": {
+    "row": 3, "col": 3}, "direction": "RIGHT"},
+  {"position": {
+    "row": 3, "col": 3}, "direction": "BOTTOM"},
+  {"position": {
+    "row": 3, "col": 4}, "direction": "RIGHT"},
+  {"position": {
+    "row": 3, "col": 6}, "direction": "BOTTOM"},
+  {"position": {
+    "row": 4, "col": 0}, "direction": "BOTTOM"},
+  {"position": {
+    "row": 4, "col": 4}, "direction": "BOTTOM"},
+  {"position": {
+    "row": 5, "col": 1}, "direction": "RIGHT"},
+  {"position": {
+    "row": 5, "col": 2}, "direction": "RIGHT"},
+  {"position": {
+    "row": 5, "col": 2}, "direction": "BOTTOM"},
+  {"position": {
+    "row": 6, "col": 3}, "direction": "RIGHT"},
+  {"position": {
+    "row": 6, "col": 5}, "direction": "RIGHT"},
+  {"position": {
+    "row": 6, "col": 6}, "direction": "TOP"}
+],
+  "blueBall" : {"row": 6, "col": 6},
+  "goalPosition" : {"row": 5, "col": 2},
+  "boardSize" : 3
+}

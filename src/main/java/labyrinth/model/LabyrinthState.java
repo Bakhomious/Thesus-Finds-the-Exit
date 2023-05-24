@@ -6,6 +6,7 @@ import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import lombok.Getter;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,8 +15,11 @@ import java.util.Set;
 import java.util.StringJoiner;
 
 public class LabyrinthState {
+    @Getter
     private String path;
+    @Getter
     private final int boardSize;
+    @Getter
     private final Set<Wall> walls;
 
     /**
@@ -43,6 +47,7 @@ public class LabyrinthState {
     public LabyrinthState(String path) {
         this.path = path;
         LabyrinthState state = loadLabyrinthState();
+
         if (state == null) {
             throw new IllegalStateException();
         }
@@ -111,12 +116,12 @@ public class LabyrinthState {
     private void checkConfig() {
         for(Wall wall : walls) {
             if (!isOnBoard(wall.getPosition())) {
-                throw new IllegalStateException();
+                throw new IllegalArgumentException();
             }
         }
         if (!isOnBoard(getPosition(BLUE_BALL))
                 || !isOnBoard(getPosition(GOAL_POSITION))) {
-            throw new IllegalStateException();
+            throw new IllegalArgumentException();
         }
     }
 
@@ -180,6 +185,14 @@ public class LabyrinthState {
             }
         }
         return new Position(toRow, toCol);
+    }
+
+    /**
+     * @param moveDirection the direction to which the blue ball is moved
+     * {@return the position of the wall in the specified direction}
+     */
+    public Position wallPositionInDirection(MoveDirection moveDirection) {
+        return hitWall(moveDirection);
     }
 
     /**
@@ -293,15 +306,6 @@ public class LabyrinthState {
     public static void main(String[] args) {
         LabyrinthState labyrinthState = new LabyrinthState();
         System.out.println(labyrinthState);
-        labyrinthState.move(MoveDirection.RIGHT);
-        System.out.println(labyrinthState);
-        labyrinthState.move(MoveDirection.DOWN);
-        System.out.println(labyrinthState);
-        labyrinthState.move(MoveDirection.LEFT);
-        System.out.println(labyrinthState);
-        labyrinthState.move(MoveDirection.UP);
-        System.out.println(labyrinthState);
-        System.out.println(labyrinthState.getWallDirectionsAtPosition(new Position(3, 3)));
     }
 
 }
