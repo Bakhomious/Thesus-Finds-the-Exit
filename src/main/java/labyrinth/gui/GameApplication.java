@@ -7,8 +7,6 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.tinylog.Logger;
 
-import javax.inject.Inject;
-
 public class GameApplication extends Application {
 
     @Override

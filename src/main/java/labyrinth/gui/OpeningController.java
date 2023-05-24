@@ -14,8 +14,6 @@ import labyrinth.results.GameResultRepository;
 import lombok.NonNull;
 import org.tinylog.Logger;
 
-
-import javax.inject.Inject;
 import java.io.IOException;
 
 public final class OpeningController {

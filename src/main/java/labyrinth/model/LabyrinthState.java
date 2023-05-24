@@ -17,14 +17,29 @@ public class LabyrinthState {
     private String path;
     private final int boardSize;
     private final Set<Wall> walls;
+
+    /**
+     * The index of the blue ball.
+     */
     public final int BLUE_BALL = 0;
+    /**
+     * The index of the goal position.
+     */
     public final int GOAL_POSITION = 1;
     private ReadOnlyObjectWrapper<Position>[] positions = new ReadOnlyObjectWrapper[2];
     private ReadOnlyBooleanWrapper goal = new ReadOnlyBooleanWrapper();
 
+    /**
+     * Creates a {@code LabyrinthState} object that corresponds to the default state.
+     */
     public LabyrinthState() {
         this("/labyrinth.json");
     }
+
+    /**
+     * Creates a {@code LabyrinthState} object that corresponds to a configuration.
+     * @param path the path of the configuration file
+     */
     public LabyrinthState(String path) {
         this.path = path;
         LabyrinthState state = loadLabyrinthState();
@@ -40,6 +55,12 @@ public class LabyrinthState {
         goal.bind(positions[BLUE_BALL].isEqualTo(positions[GOAL_POSITION]));
     }
 
+    /**
+     * Creates a {@code LabyrinthState} object that corresponds to a configuration.
+     * @param boardSize the size of the board
+     * @param walls the walls of the board
+     * @param positions the positions of the blue ball and the goal
+     */
     public LabyrinthState(int boardSize, Set<Wall> walls, ReadOnlyObjectWrapper<Position>[] positions) {
         this.boardSize = boardSize;
         this.walls = walls;
@@ -99,14 +120,24 @@ public class LabyrinthState {
         }
     }
 
+    /**
+     * {@return whether the puzzle is solved}
+     */
     public boolean isGoal() {
         return goal.get();
     }
 
+    /**
+     * {@return goal ReadOnlyProperty}
+     */
     public ReadOnlyBooleanProperty goalProperty() {
         return goal.getReadOnlyProperty();
     }
 
+    /**
+     * Moves the blue ball in the specified direction.
+     * @param moveDirection the direction to which the blue ball is moved
+     */
     public void move(MoveDirection moveDirection) {
         switch (moveDirection) {
             case UP -> moveUp();
@@ -151,6 +182,12 @@ public class LabyrinthState {
         return new Position(toRow, toCol);
     }
 
+    /**
+     * Determines whether the blue ball is able to move in the specified direction from the specified position.
+     * @param moveDirection the direction to which the blue ball is moved
+     * @param position the position of the blue ball
+     * {@return whether the blue ball is able to move in the specified direction from the specified position}
+     */
     public boolean canMove(MoveDirection moveDirection, Position position) {
         return switch (moveDirection) {
             case UP -> canMoveUp(position);
@@ -205,6 +242,10 @@ public class LabyrinthState {
         return walls.contains(testWall);
     }
 
+    /**
+     * @param position the position of the blue ball
+     * {@return the set of directions in which there is a wall at the specified position}
+     */
     public Set<Wall.Direction> getWallDirectionsAtPosition(Position position) {
         Set<Wall.Direction> wallDirections = new HashSet<>();
         for(var wallDirection : Wall.Direction.values())
@@ -226,6 +267,19 @@ public class LabyrinthState {
         positions[BLUE_BALL].set(toPosition);
     }
 
+    /**
+     * {@return the position of the blue ball}
+     */
+    public Position getPosition(int n) {
+        return positions[n].get();
+    }
+
+    /**
+     * {@return the ReadOnly of the blue ball}
+     */
+    public ReadOnlyObjectProperty<Position> positionProperty(int n) {
+        return positions[n].getReadOnlyProperty();
+    }
 
     @Override
     public String toString() {
@@ -234,14 +288,6 @@ public class LabyrinthState {
         sj.add(String.format("\nBlue Ball: %s, Goal: %s",
                 getPosition(BLUE_BALL).toString(), getPosition(GOAL_POSITION).toString()));
         return sj.toString();
-    }
-
-    public Position getPosition(int n) {
-        return positions[n].get();
-    }
-
-    public ReadOnlyObjectProperty<Position> positionProperty(int n) {
-        return positions[n].getReadOnlyProperty();
     }
 
     public static void main(String[] args) {

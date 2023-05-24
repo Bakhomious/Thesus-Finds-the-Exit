@@ -1,11 +1,13 @@
 package labyrinth.model;
 
-import javafx.geometry.Pos;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/**
+ * Represents a wall in the labyrinth.
+ */
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
