@@ -30,7 +30,7 @@ public final class HighScoreController {
 
     private FXMLLoader fxmlLoader = new FXMLLoader();
 
-    private GameResultRepository gameResultRepository = new GameResultRepository();
+    private GameResultRepository gameResultRepository = GameResultRepository.getInstance();
 
     @FXML
     private TableView<GameResult> highScoreTable;
@@ -50,7 +50,7 @@ public final class HighScoreController {
     @FXML
     private void initialize() throws IOException {
         Logger.debug("Loading high scores...");
-        gameResultRepository.loadFromFile(new File("results.json"));
+
         List<GameResult> highScoreList = gameResultRepository.findBest(10);
 
         player.setCellValueFactory(new PropertyValueFactory<>("player"));

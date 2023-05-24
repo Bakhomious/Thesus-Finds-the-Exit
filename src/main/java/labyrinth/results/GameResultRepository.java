@@ -13,8 +13,17 @@ import java.util.Set;
  */
 public class GameResultRepository extends FileSystemRepository<GameResult> {
 
-    public GameResultRepository() {
+    private static GameResultRepository INSTANCE;
+
+    private GameResultRepository() {
         super(GameResult.class);
+    }
+
+    public static GameResultRepository getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new GameResultRepository();
+        }
+        return INSTANCE;
     }
 
     @Override

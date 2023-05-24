@@ -58,7 +58,7 @@ public class GameController {
     @Setter
     private String playerName;
 
-    private GameResultRepository gameResultRepository = new GameResultRepository();
+    private GameResultRepository gameResultRepository = GameResultRepository.getInstance();
 
     private Stopwatch stopwatch = new Stopwatch();
 
@@ -189,19 +189,18 @@ public class GameController {
 
     private void storeResult(){
         Logger.info("Storing game results for player {}", playerName);
-        var repository = new GameResultRepository();
 
         var file = new File("results.json");
         try {
-            repository.loadFromFile(file);
+            gameResultRepository.loadFromFile(file);
         } catch (FileNotFoundException e) {
             Logger.warn("File {} was not found, creating one!", file);
         } catch (IOException e){
             Logger.warn("Error reading file {}!", file);
         }
-        repository.addOne(createGameResult());
+        gameResultRepository.addOne(createGameResult());
         try {
-            repository.saveToFile(file);
+            gameResultRepository.saveToFile(file);
         } catch (IOException e){
             Logger.warn("Error writing file {}!", file);
         }
