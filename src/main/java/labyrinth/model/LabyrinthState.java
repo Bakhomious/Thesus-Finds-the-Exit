@@ -14,6 +14,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.StringJoiner;
 
+/**
+ * Represents the state of the labyrinth.
+ */
 public class LabyrinthState {
     @Getter
     private String path;
@@ -281,7 +284,8 @@ public class LabyrinthState {
     }
 
     /**
-     * {@return the position of the blue ball}
+     * @param n the index of the position
+     * {@return the position of the given index}
      */
     public Position getPosition(int n) {
         return positions[n].get();
