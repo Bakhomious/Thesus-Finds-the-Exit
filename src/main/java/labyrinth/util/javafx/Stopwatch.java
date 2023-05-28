@@ -1,4 +1,4 @@
-package labyrinth.util;
+package labyrinth.util.javafx;
 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;

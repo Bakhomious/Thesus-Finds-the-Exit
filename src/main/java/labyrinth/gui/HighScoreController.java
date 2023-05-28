@@ -14,11 +14,10 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import labyrinth.results.GameResult;
 import labyrinth.results.GameResultRepository;
-import labyrinth.util.ControllerHelper;
+import labyrinth.util.javafx.ControllerHelper;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.tinylog.Logger;
 
-import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.ZonedDateTime;
