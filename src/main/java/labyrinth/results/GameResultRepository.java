@@ -19,6 +19,9 @@ public class GameResultRepository extends FileSystemRepository<GameResult> {
         super(GameResult.class);
     }
 
+    /**
+     * @return the singleton instance of the {@code GameResultRepository}
+     */
     public static GameResultRepository getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new GameResultRepository();

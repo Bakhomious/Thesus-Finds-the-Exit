@@ -51,10 +51,6 @@ public class LabyrinthState {
         this.path = path;
         LabyrinthState state = loadLabyrinthState();
 
-        if (state == null) {
-            throw new IllegalStateException();
-        }
-
         this.boardSize = state.boardSize;
         this.walls = state.walls;
         this.positions = state.positions;
@@ -191,18 +187,17 @@ public class LabyrinthState {
     }
 
     /**
-     * @param moveDirection the direction to which the blue ball is moved
      * {@return the position of the wall in the specified direction}
+     * @param moveDirection the direction to which the blue ball is moved
      */
     public Position wallPositionInDirection(MoveDirection moveDirection) {
         return hitWall(moveDirection);
     }
 
     /**
-     * Determines whether the blue ball is able to move in the specified direction from the specified position.
+     * {@return whether the blue ball is able to move in the specified direction from the specified position}
      * @param moveDirection the direction to which the blue ball is moved
      * @param position the position of the blue ball
-     * {@return whether the blue ball is able to move in the specified direction from the specified position}
      */
     public boolean canMove(MoveDirection moveDirection, Position position) {
         return switch (moveDirection) {
@@ -259,8 +254,8 @@ public class LabyrinthState {
     }
 
     /**
-     * @param position the position of the blue ball
      * {@return the set of directions in which there is a wall at the specified position}
+     * @param position the position of the blue ball
      */
     public Set<Wall.Direction> getWallDirectionsAtPosition(Position position) {
         Set<Wall.Direction> wallDirections = new HashSet<>();
@@ -284,15 +279,16 @@ public class LabyrinthState {
     }
 
     /**
-     * @param n the index of the position
      * {@return the position of the given index}
+     * @param n the index of the position
      */
     public Position getPosition(int n) {
         return positions[n].get();
     }
 
     /**
-     * {@return the ReadOnly of the blue ball}
+     * {@return the ReadOnlyProperty of the given index}
+     * @param n the index of the position
      */
     public ReadOnlyObjectProperty<Position> positionProperty(int n) {
         return positions[n].getReadOnlyProperty();
@@ -300,7 +296,7 @@ public class LabyrinthState {
 
     @Override
     public String toString() {
-        var sj= new StringJoiner(", ", "[", "]");
+        var sj = new StringJoiner("; ", "[", "]");
         walls.forEach(wall -> sj.add(wall.toString()));
         sj.add(String.format("\nBlue Ball: %s, Goal: %s",
                 getPosition(BLUE_BALL).toString(), getPosition(GOAL_POSITION).toString()));

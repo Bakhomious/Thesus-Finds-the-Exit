@@ -17,6 +17,9 @@ public class Wall {
     @Getter
     private Direction direction;
 
+    /**
+     * Represents the direction of the wall.
+     */
     public enum Direction {
         RIGHT, BOTTOM, LEFT, TOP;
     }
