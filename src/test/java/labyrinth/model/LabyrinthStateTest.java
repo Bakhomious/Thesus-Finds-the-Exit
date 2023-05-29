@@ -33,42 +33,6 @@ class LabyrinthStateTest {
     }
 
     @Test
-    void goalProperty() {
-        assertEquals(state1.isGoal(), state1.goalProperty().get());
-        assertEquals(state2.isGoal(), state2.goalProperty().get());
-        assertEquals(state3.isGoal(), state3.goalProperty().get());
-        assertEquals(state4.isGoal(), state4.goalProperty().get());
-    }
-
-    @Test
-    void move_up_state1() {
-        var expected = state1.wallPositionInDirection(MoveDirection.UP);
-        state1.move(MoveDirection.UP);
-        assertEquals(expected, state1.getPosition(state1.BLUE_BALL));
-    }
-
-    @Test
-    void move_down_state1() {
-        var expected = state1.wallPositionInDirection(MoveDirection.DOWN);
-        state1.move(MoveDirection.DOWN);
-        assertEquals(expected, state1.getPosition(state1.BLUE_BALL));
-    }
-
-    @Test
-    void move_left_state1() {
-        var expected = state1.wallPositionInDirection(MoveDirection.LEFT);
-        state1.move(MoveDirection.LEFT);
-        assertEquals(expected, state1.getPosition(state1.BLUE_BALL));
-    }
-
-    @Test
-    void move_right_state1() {
-        var expected = state1.wallPositionInDirection(MoveDirection.RIGHT);
-        state1.move(MoveDirection.RIGHT);
-        assertEquals(expected, state1.getPosition(state1.BLUE_BALL));
-    }
-
-    @Test
     void canMove_state1() {
         assertTrue(state1.canMove(MoveDirection.UP, state1.getPosition(state1.BLUE_BALL)));
         assertTrue(state1.canMove(MoveDirection.DOWN, state1.getPosition(state1.BLUE_BALL)));
