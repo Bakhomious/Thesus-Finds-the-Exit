@@ -143,31 +143,7 @@ public class LabyrinthState {
      * @param moveDirection the direction to which the blue ball is moved
      */
     public void move(MoveDirection moveDirection) {
-        switch (moveDirection) {
-            case UP -> moveUp();
-            case RIGHT -> moveRight();
-            case DOWN -> moveDown();
-            case LEFT -> moveLeft();
-        }
-    }
-
-    private void moveUp() {
-        Position toPosition = hitWall(MoveDirection.UP);
-        moveBall(toPosition);
-    }
-
-    private void moveRight() {
-        Position toPosition = hitWall(MoveDirection.RIGHT);
-        moveBall(toPosition);
-    }
-
-    private void moveDown() {
-        Position toPosition = hitWall(MoveDirection.DOWN);
-        moveBall(toPosition);
-    }
-
-    private void moveLeft() {
-        Position toPosition = hitWall(MoveDirection.LEFT);
+        Position toPosition = hitWall(moveDirection);
         moveBall(toPosition);
     }
 
@@ -247,7 +223,6 @@ public class LabyrinthState {
         }
         return false;
     }
-
 
     private boolean isWall(Wall testWall) {
         return walls.contains(testWall);
