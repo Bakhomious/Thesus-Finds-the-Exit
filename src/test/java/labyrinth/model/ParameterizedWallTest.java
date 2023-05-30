@@ -6,8 +6,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 class ParameterizedWallTest {
 
@@ -28,7 +27,7 @@ class ParameterizedWallTest {
     @MethodSource("wallProvider")
     void testEquals(Wall wall) {
         Wall sameWall = new Wall(wall.getPosition(), wall.getDirection());
-        assertEquals(wall, sameWall);
+        assertTrue(wall.equals(sameWall));
     }
 
     @ParameterizedTest

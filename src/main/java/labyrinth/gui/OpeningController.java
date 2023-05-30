@@ -18,7 +18,6 @@ import java.io.IOException;
 
 public final class OpeningController {
 
-    private GameResultRepository gameResultRepository;
     @FXML
     private TextField playerNameTextField;
     @FXML
