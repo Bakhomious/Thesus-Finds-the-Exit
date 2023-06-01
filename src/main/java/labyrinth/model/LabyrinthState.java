@@ -1,15 +1,11 @@
 package labyrinth.model;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import lombok.Getter;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.StringJoiner;
@@ -28,11 +24,11 @@ public class LabyrinthState {
     /**
      * The index of the blue ball.
      */
-    public final int BLUE_BALL = 0;
+    public static final int BLUE_BALL = 0;
     /**
      * The index of the goal position.
      */
-    public final int GOAL_POSITION = 1;
+    public static final int GOAL_POSITION = 1;
     private ReadOnlyObjectWrapper<Position>[] positions = new ReadOnlyObjectWrapper[2];
     private ReadOnlyBooleanWrapper goal = new ReadOnlyBooleanWrapper();
 
@@ -49,7 +45,7 @@ public class LabyrinthState {
      */
     public LabyrinthState(String path) {
         this.path = path;
-        LabyrinthState state = loadLabyrinthState();
+        LabyrinthState state = LabyrinthStateLoader.loadFromJson(path);
 
         this.boardSize = state.boardSize;
         this.walls = state.walls;
@@ -69,47 +65,6 @@ public class LabyrinthState {
         this.boardSize = boardSize;
         this.walls = walls;
         this.positions = positions;
-    }
-
-
-    private LabyrinthState loadLabyrinthState() {
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            InputStream inputStream = LabyrinthState.class.getResourceAsStream(this.path);
-            JsonNode jsonNode = mapper.readTree(inputStream);
-
-            int boardSize = mapper.treeToValue(jsonNode.get("boardSize"), Integer.class);
-            Position blueBallPosition = mapper.treeToValue(jsonNode.get("blueBall"), Position.class);
-            Position goalPosition = mapper.treeToValue(jsonNode.get("goalPosition"), Position.class);
-            Wall[] walls = mapper.treeToValue(jsonNode.get("walls"), Wall[].class);
-            Set<Wall> wallSet = processWalls(walls);
-            positions[BLUE_BALL] = new ReadOnlyObjectWrapper<>(blueBallPosition);
-            positions[GOAL_POSITION] = new ReadOnlyObjectWrapper<>(goalPosition);
-
-            return new LabyrinthState(boardSize, wallSet, positions);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    private Set<Wall> processWalls(Wall... walls) {
-        Set<Wall> wallSet = new HashSet<>();
-
-        for(Wall wall: walls) {
-            wallSet.add(wall);
-            switch (wall.getDirection()) {
-                case RIGHT ->
-                        wallSet.add(new Wall(wall.getPosition()
-                                .getPosition(MoveDirection.RIGHT),
-                                Wall.Direction.LEFT));
-                case BOTTOM ->
-                        wallSet.add(new Wall(wall.getPosition()
-                                .getPosition(MoveDirection.DOWN),
-                                Wall.Direction.TOP));
-            }
-        }
-        return wallSet;
     }
 
     private void checkConfig() {
