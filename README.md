@@ -1,4 +1,4 @@
-# Thesus Find the Exit
+# Thesus Finds the Exit
 
 Consider the labyrinth below:
 
@@ -17,4 +17,5 @@ The goal of the game is to navigate the blue ball to the square marked with the 
 - The game loads the labyrinth from a `JSON` file, which makes it easily extensible to add more maps.
 - Write results to a `JSON` file using [jackson](https://github.com/FasterXML/jackson).
 
+This project was made under the supervision of [Dr Péter Jeszenszky](https://inf.unideb.hu/dr-jeszenszky-peter), professor at the University of Debrecen.
 
